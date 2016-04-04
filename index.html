@@ -45,8 +45,12 @@
     var socket = io.connect('http://localhost');
 
     socket.on('moveMade', function (data) {
+        // Render the move
         $('#' + data.position).text(data.symbol);
+        // If the symbol is the same as the player's symbol,
+        // we can assume it is his turn
         myTurn = (data.symbol !== symbol);
+
         if (!isGameOver()) {
             renderTurnMessage();
         } else {
@@ -55,12 +59,15 @@
             } else {
                 $('#messages').text('Game over. You won!');
             }
+            // Disable the board
             $('.board button').attr('disabled', true);
         }
     });
 
     socket.on('gameBegin', function (data) {
+        // the server will asign X or O to the player
         symbol = data.symbol;
+        // by convention : give X the first turn
         myTurn = (symbol === 'X');
         renderTurnMessage();
     });
@@ -76,6 +83,7 @@
     });
 
     function getBoardState() {
+        // obj holds al the X and O that are on the board
         var obj = {};
         $('.board button').each(function () {
             obj[$(this).attr('id')] = $(this).text() || '';
@@ -96,7 +104,7 @@
                     state.a1 + state.b1 + state.c1,
                     state.a2 + state.b2 + state.c2
                 ];
-
+        // one of the rows must equal to at least one f 'matches' value
         for (var i = 0; i < rows.length; i++) {
             if (rows[i] === matches[0] || rows[i] === matches[1]) {
                 return true;
@@ -116,9 +124,11 @@
 
     function makeMove(e) {
         e.preventDefault();
+        // Not your ture
         if (!myTurn) {
             return;
         }
+        // Button already filled
         if ($(this).text().length) {
             return;
         }

@@ -17,7 +17,7 @@ var players = {},
 
 io.on('connection', function (socket) {
     joinGame(socket);
-
+    // Once the socket has an opponent, we can begin the game
     if (getOpponent(socket)) {
         socket.emit('gameBegin', {
             symbol: players[socket.id].symbol
@@ -51,6 +51,7 @@ io.on('connection', function (socket) {
 
 
 function joinGame(socket) {
+    // Add the player to our object of players
     players[socket.id] = {
         opponent: unmatched,
         symbol: 'X',
@@ -65,6 +66,7 @@ function joinGame(socket) {
     }
 }
 
+// Returns the opponent socket
 function getOpponent(socket) {
     if (!players[socket.id].opponent) {
         return;
