@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TicSocketToe</title>
+    <style>
+        body {
+            text-align: center;
+        }
+
+        .board {
+            margin: auto;
+            width: 350px;
+        }
+
+        .board button {
+            height: 100px;
+            width: 100px;
+            margin: 0px;
+            padding: 0px;
+            float: left;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-size: 3em
+        }
+    </style>
+</head>
+<body>
+<div class="board">
+    <button id="a0"></button>
+    <button id="a1"></button>
+    <button id="a2"></button>
+    <button id="b0"></button>
+    <button id="b1"></button>
+    <button id="b2"></button>
+    <button id="c0"></button>
+    <button id="c1"></button>
+    <button id="c2"></button>
+    <div id="messages">Waiting for opponent to join...</div>
+</div>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script>
+    var myTurn = false, symbol;
+    var socket = io.connect('http://localhost');
+
+    socket.on('moveMade', function (data) {
+        $('#' + data.position).text(data.symbol);
+        myTurn = (data.symbol !== symbol);
+        if (!isGameOver()) {
+            renderTurnMessage();
+        } else {
+            if (myTurn) {
+                $('#messages').text('Game over. You lost.');
+            } else {
+                $('#messages').text('Game over. You won!');
+            }
+            $('.board button').attr('disabled', true);
+        }
+    });
+
+    socket.on('gameBegin', function (data) {
+        symbol = data.symbol;
+        myTurn = (symbol === 'X');
+        renderTurnMessage();
+    });
+
+    socket.on('opponentQuit', function () {
+        $('#messages').text('Your opponent quit the game.');
+        $('.board button').attr('disabled', true);
+    });
+
+    $(function () {
+        $('.board button').attr('disabled', true);
+        $('.board> button').on('click', makeMove);
+    });
+
+    function getBoardState() {
+        var obj = {};
+        $('.board button').each(function () {
+            obj[$(this).attr('id')] = $(this).text() || '';
+        });
+        return obj;
+    }
+
+    function isGameOver() {
+        var state = getBoardState(),
+                matches = ['XXX', 'OOO'],
+                rows = [
+                    state.a0 + state.a1 + state.a2,
+                    state.b0 + state.b1 + state.b2,
+                    state.c0 + state.c1 + state.c2,
+                    state.a0 + state.b1 + state.c2,
+                    state.a2 + state.b1 + state.c0,
+                    state.a0 + state.b0 + state.c0,
+                    state.a1 + state.b1 + state.c1,
+                    state.a2 + state.b2 + state.c2
+                ];
+
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i] === matches[0] || rows[i] === matches[1]) {
+                return true;
+            }
+        }
+    }
+
+    function renderTurnMessage() {
+        if (!myTurn) {
+            $('#messages').text('Your opponent\'s turn');
+            $('.board button').attr('disabled', true);
+        } else {
+            $('#messages').text('Your turn.');
+            $('.board button').removeAttr('disabled');
+        }
+    }
+
+    function makeMove(e) {
+        e.preventDefault();
+        if (!myTurn) {
+            return;
+        }
+        if ($(this).text().length) {
+            return;
+        }
+        socket.emit('makeMove', {
+            symbol: symbol,
+            position: $(this).attr('id')
+        });
+    }
+
+</script>
+</body>
+</html>

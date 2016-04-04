@@ -1,0 +1,15 @@
+{
+  "name": "ticsockettoe",
+  "version": "1.0.0",
+  "description": "A Node.js Api for realtime/multiplayer tic-tac-toe game made with Socket.io ",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.4",
+    "socket.io": "^1.4.5"
+  }
+}
