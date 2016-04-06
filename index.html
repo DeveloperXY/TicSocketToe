@@ -49,6 +49,7 @@
         rematchBtn.css("display", "none");
         rematchBtn.click(function () {
             socket.emit('demandRematch');
+            $(this).fadeOut();
         })
     })
 </script>
@@ -80,6 +81,10 @@
     });
 
     socket.on('gameBegin', function (data) {
+        // Clear the board at the start of each game
+        clearBoard();
+        // We're starting a new game, hide the 'rematch' button
+        $("#rematch").css("display", "none");
         // the server will asign X or O to the player
         symbol = data.symbol;
         // by convention : give X the first turn
@@ -90,16 +95,39 @@
     socket.on('opponentQuit', function () {
         $('#messages').text('Your opponent quit the game.');
         $('.board button').attr('disabled', true);
+        reinitialize();
     });
 
     socket.on('rematchSent', function () {
-        alert("Rematch request sent ! Hold tight...");
+        $('#messages').text("Rematch request sent ! " +
+                "Waiting for your opponent's response...");
+    });
+
+    socket.on('rematchRejected', function () {
+        $('#messages').text("Your opponent rejected your rematch request.");
+        reinitialize();
     });
 
     $(function () {
         $('.board button').attr('disabled', true);
         $('.board> button').on('click', makeMove);
     });
+
+    /**
+     * Clears the text content of all the buttons of the grid.
+     */
+    function clearBoard() {
+        $('.board button').each(function () {
+            $(this).text("");
+        });
+    }
+
+    function reinitialize() {
+        setTimeout(function () {
+            $('#messages').text("Waiting for opponent to join...");
+            clearBoard();
+        }, 3000)
+    }
 
     function getBoardState() {
         // obj holds al the X and O that are on the board
