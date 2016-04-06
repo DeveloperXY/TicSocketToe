@@ -16,6 +16,7 @@ var players = {},
     unmatched;
 
 io.on('connection', function (socket) {
+    console.log("A user joined the game.");
     joinGame(socket);
     // Once the socket has an opponent, we can begin the game
     if (getOpponent(socket)) {
@@ -37,6 +38,11 @@ io.on('connection', function (socket) {
         socket.emit('moveMade', data);
         getOpponent(socket).emit('moveMade', data);
 
+    });
+
+    socket.on('demandRematch', function () {
+        socket.emit('rematchSent', {msg: "Rematch request sent !"});
+        getOpponent(socket).emit('rematchRequest');
     });
 
     socket.on('disconnect', function () {

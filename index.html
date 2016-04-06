@@ -37,9 +37,21 @@
     <button id="c1"></button>
     <button id="c2"></button>
     <div id="messages">Waiting for opponent to join...</div>
+    <div>
+        <input id="rematch" type="button" value="Rematch">
+    </div>
 </div>
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script>
+    $(document).ready(function () {
+        var rematchBtn = $("#rematch");
+        rematchBtn.css("display", "none");
+        rematchBtn.click(function () {
+            socket.emit('demandRematch');
+        })
+    })
+</script>
 <script>
     var myTurn = false, symbol;
     var socket = io.connect('http://localhost');
@@ -61,6 +73,9 @@
             }
             // Disable the board
             $('.board button').attr('disabled', true);
+
+            // Show the 'rematch' button
+            $("#rematch").css("display", "block");
         }
     });
 
@@ -75,6 +90,10 @@
     socket.on('opponentQuit', function () {
         $('#messages').text('Your opponent quit the game.');
         $('.board button').attr('disabled', true);
+    });
+
+    socket.on('rematchSent', function () {
+        alert("Rematch request sent ! Hold tight...");
     });
 
     $(function () {
