@@ -48,4 +48,4 @@ ___
     2. **position** : the id of the clicked button ( as specified in the above, the ids must be in range a0->c2)
 
 
-> If you feel confused, clone the above example , run it ( ```npm start || node app``` ) , go to *localhost:3000*, connect two socket instances and just **PLAY**!
+> If you feel confused, clone the above example , run it ( ```npm start || node app``` ) , go to *localhost:5000*, connect two socket instances and just **PLAY**!

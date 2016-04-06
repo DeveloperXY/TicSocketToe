@@ -54,7 +54,7 @@
 </script>
 <script>
     var myTurn = false, symbol;
-    var socket = io.connect('http://localhost');
+    var socket = io.connect();
 
     socket.on('moveMade', function (data) {
         // Render the move
