@@ -4,7 +4,7 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
 
-server.listen(5000, function () {
+server.listen(process.env.PORT || 5000, function () {
     console.log('App Started On port : 5000');
 });
 
