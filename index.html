@@ -98,6 +98,13 @@
         reinitialize();
     });
 
+    socket.on('rematchRequest', function () {
+        socket.emit('rematchResponse', {
+            response: confirm("Your opponent is asking for a rematch ! " +
+                    "Do you want to go for another round ?")
+        })
+    });
+
     socket.on('rematchSent', function () {
         $('#messages').text("Rematch request sent ! " +
                 "Waiting for your opponent's response...");
